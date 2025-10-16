@@ -1,6 +1,8 @@
 package com.chalk.ffs.Entity;
 
+import com.chalk.ffs.DTO.Project.ProjectDTO;
 import com.chalk.ffs.Enums.ProjectStatus;
+import com.chalk.ffs.Exceptions.Project.InvalidDateException;
 import jakarta.persistence.*;
 
 import java.time.LocalDate;
@@ -24,6 +26,17 @@ public class Project{
 
     @ManyToMany(mappedBy = "projects")
     private Set<Environment> environments = new HashSet<>();
+
+    public Project(){}
+    public Project(ProjectDTO projectDTO, Organization organization){
+        this.organization=organization;
+        this.name=projectDTO.getName();
+        this.startDate=projectDTO.getStartDate();
+        this.endDate=projectDTO.getEndDate();
+
+        if(startDate.isAfter(endDate))throw new InvalidDateException("The start date cannot be after end date");
+        this.projectStatus=startDate.isEqual(LocalDate.now())?ProjectStatus.IN_PROGRESS:ProjectStatus.PLANNED;
+    }
 
     public Long getId() {
         return id;

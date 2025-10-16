@@ -3,6 +3,7 @@ package com.chalk.ffs.Controller.admin;
 import com.chalk.ffs.DTO.Organization.OrganizationDTO;
 import com.chalk.ffs.DTO.Organization.OrganizationListDTO;
 import com.chalk.ffs.Service.OrganizationService;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -17,7 +18,7 @@ public class OrganizationController {
     }
 
     @PostMapping("/organizations")
-    public ResponseEntity<Void> createOrganization(@RequestBody OrganizationDTO organizationDTO){
+    public ResponseEntity<Void> createOrganization(@Valid @RequestBody OrganizationDTO organizationDTO){
         organizationService.addOrganization(organizationDTO);
         return ResponseEntity.ok().build();
     }

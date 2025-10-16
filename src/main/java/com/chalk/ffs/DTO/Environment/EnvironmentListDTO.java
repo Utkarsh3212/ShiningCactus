@@ -15,4 +15,20 @@ public class EnvironmentListDTO {
         this.projectName= project.getName();
         this.environments=project.getEnvironments().stream().map(Environment::getEnv).toList();
     }
+
+    public String getProjectName() {
+        return projectName;
+    }
+
+    public void setProjectName(String projectName) {
+        this.projectName = projectName;
+    }
+
+    public List<String> getEnvironments() {
+        return environments;
+    }
+
+    public void setEnvironments(List<String> environments) {
+        this.environments = environments;
+    }
 }

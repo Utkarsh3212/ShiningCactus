@@ -14,14 +14,6 @@ public class Environment {
     private String env;
     private String description;
 
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
     @ManyToMany
     @JoinTable(
             name="project_environment",
@@ -29,6 +21,14 @@ public class Environment {
             inverseJoinColumns = @JoinColumn(name="project_id")
     )
     private Set<Project> projects =new HashSet<>();
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
 
     public Environment(){}
 

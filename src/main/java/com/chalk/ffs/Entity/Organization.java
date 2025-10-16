@@ -4,6 +4,7 @@ import com.chalk.ffs.DTO.Organization.OrganizationDTO;
 import com.chalk.ffs.Enums.OrganizationStatus;
 import jakarta.persistence.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -16,7 +17,7 @@ public class Organization {
     private OrganizationStatus status;
 
     @OneToMany(mappedBy = "organization")
-    private List<Project> projectList;
+    private List<Project> projectList = new ArrayList<>();
 
     public Long getId() {
         return id;
@@ -48,6 +49,14 @@ public class Organization {
 
     public void setStatus(OrganizationStatus status) {
         this.status = status;
+    }
+
+    public List<Project> getProjectList() {
+        return projectList;
+    }
+
+    public void setProjectList(List<Project> projectList) {
+        this.projectList = projectList;
     }
 
     public Organization(OrganizationDTO organizationDTO){

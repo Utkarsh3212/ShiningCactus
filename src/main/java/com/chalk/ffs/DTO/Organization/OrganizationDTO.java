@@ -2,8 +2,10 @@ package com.chalk.ffs.DTO.Organization;
 
 import com.chalk.ffs.Entity.Organization;
 import com.chalk.ffs.Enums.OrganizationStatus;
+import jakarta.validation.constraints.NotBlank;
 
 public class OrganizationDTO {
+    @NotBlank(message = "Organization cannot be blank")
     private String name;
     private Integer projectCount;
     private OrganizationStatus status;
@@ -34,6 +36,7 @@ public class OrganizationDTO {
 
     public OrganizationDTO(){
         this.projectCount=0;
+        this.status=OrganizationStatus.ACTIVE;
     }
 
     public OrganizationDTO(Organization organization){

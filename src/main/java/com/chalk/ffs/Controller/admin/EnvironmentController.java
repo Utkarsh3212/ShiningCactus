@@ -2,9 +2,9 @@ package com.chalk.ffs.Controller.admin;
 
 import com.chalk.ffs.DTO.Environment.EnvironmentDTO;
 import com.chalk.ffs.DTO.Environment.EnvironmentListDTO;
-import com.chalk.ffs.Entity.Project;
 import com.chalk.ffs.Service.EnvironmentService;
 import com.chalk.ffs.Service.ProjectService;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -12,29 +12,25 @@ import org.springframework.web.bind.annotation.*;
 public class EnvironmentController {
 
     private final EnvironmentService environmentService;
-    private final ProjectService projectService;
 
     public EnvironmentController(EnvironmentService environmentService, ProjectService projectService){
         this.environmentService=environmentService;
-        this.projectService=projectService;
     }
 
     @GetMapping("/projects/{projectId}/environments")
-    public ResponseEntity<EnvironmentListDTO> getEnvironment(@PathVariable Long projectId){
-        Project project=projectService.getProjectById(projectId);
-        EnvironmentListDTO environmentListDTO=new EnvironmentListDTO(project);
-
+    public ResponseEntity<EnvironmentListDTO> getEnvironmentList(@PathVariable Long projectId){
+        EnvironmentListDTO environmentListDTO=environmentService.getEnvironmentsById(projectId);
         return ResponseEntity.ok(environmentListDTO);
     }
 
-    @PostMapping ("/projects/{projectId}")
-    public ResponseEntity<Void> addEnvironment(@PathVariable Long projectId,@RequestBody EnvironmentDTO environmentDTO){
+    @PostMapping ("/projects/{projectId}/environments")
+    public ResponseEntity<Void> addEnvironment(@PathVariable Long projectId,@Valid @RequestBody EnvironmentDTO environmentDTO){
         environmentService.addEnvironmentToProject(projectId,environmentDTO);
         return ResponseEntity.ok().build();
     }
 
-    @DeleteMapping("/projects/{projectId}")
-    public ResponseEntity<Void> removeEnvironment(@PathVariable Long projectId,@RequestBody EnvironmentDTO environmentDTO){
+    @DeleteMapping("/projects/{projectId}/environments")
+    public ResponseEntity<Void> removeEnvironment(@PathVariable Long projectId,@Valid @RequestBody EnvironmentDTO environmentDTO){
         environmentService.removeEnvironmentFromProject(projectId,environmentDTO);
         return ResponseEntity.ok().build();
     }

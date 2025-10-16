@@ -1,8 +1,10 @@
 package com.chalk.ffs.DTO.Environment;
 
 import com.chalk.ffs.Entity.Environment;
+import jakarta.validation.constraints.NotBlank;
 
 public class EnvironmentDTO {
+    @NotBlank(message = "Environment name cannot be blank")
     private String env;
     private String description;
 
