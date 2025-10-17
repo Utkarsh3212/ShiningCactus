@@ -5,6 +5,8 @@ import com.chalk.ffs.Entity.Organization;
 import com.chalk.ffs.Exceptions.Organization.OrganizationNotFoundException;
 import com.chalk.ffs.Repository.OrganizationRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -16,14 +18,18 @@ public class OrganizationService {
         this.organizationRepository=organizationRepository;
     }
 
-    public void addOrganization(OrganizationDTO organizationDTO){
-        organizationRepository.save(new Organization(organizationDTO));
+    @Transactional(isolation = Isolation.READ_COMMITTED)
+    public OrganizationDTO addOrganization(OrganizationDTO organizationDTO){
+        Organization organization=new Organization(organizationDTO);
+        organization=organizationRepository.save(organization);
+        return new OrganizationDTO(organization);
     }
 
     public List<Organization> listAllOrgs(){
         return organizationRepository.findAll();
     }
 
+    @Transactional(isolation = Isolation.READ_COMMITTED)
     public void deleteOrganizationById(Long orgId){
         organizationRepository.deleteById(orgId);
     }

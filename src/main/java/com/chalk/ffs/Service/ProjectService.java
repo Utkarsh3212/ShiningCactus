@@ -9,6 +9,8 @@ import com.chalk.ffs.Exceptions.Project.ProjectNotFoundException;
 import com.chalk.ffs.Repository.OrganizationRepository;
 import com.chalk.ffs.Repository.ProjectRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class ProjectService {
@@ -37,16 +39,19 @@ public class ProjectService {
         return new ProjectListDTO(organization);
     }
 
-    public void createProjectByOrgId(Long orgId,ProjectDTO projectDTO){
+    @Transactional(isolation = Isolation.READ_COMMITTED)
+    public ProjectDTO createProjectByOrgId(Long orgId,ProjectDTO projectDTO){
         Organization organization=organizationRepository.getOrganizationById(orgId)
                 .orElseThrow(()->new OrganizationNotFoundException(
                         "No organization found with id: "+orgId
                 ));
 
         Project project=new Project(projectDTO,organization);
-        projectRepository.save(project);
+        project=projectRepository.save(project);
         organization.getProjectList().add(project);
         organization.setProjectCount(organization.getProjectCount()+1);
-        organizationRepository.save(organization);
+        organization=organizationRepository.save(organization);
+
+        return new ProjectDTO(project);
     }
 }

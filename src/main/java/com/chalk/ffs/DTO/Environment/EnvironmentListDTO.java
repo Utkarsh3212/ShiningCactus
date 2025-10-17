@@ -1,19 +1,18 @@
 package com.chalk.ffs.DTO.Environment;
 
-import com.chalk.ffs.Entity.Environment;
 import com.chalk.ffs.Entity.Project;
 
 import java.util.List;
 
 public class EnvironmentListDTO {
     private String projectName;
-    private List<String> environments;
+    private List<EnvironmentDTO> environmentDTOList;
 
     public EnvironmentListDTO(){}
 
     public EnvironmentListDTO(Project project){
         this.projectName= project.getName();
-        this.environments=project.getEnvironments().stream().map(Environment::getEnv).toList();
+        this.environmentDTOList=project.getEnvironments().stream().map(EnvironmentDTO::new).toList();
     }
 
     public String getProjectName() {
@@ -24,11 +23,11 @@ public class EnvironmentListDTO {
         this.projectName = projectName;
     }
 
-    public List<String> getEnvironments() {
-        return environments;
+    public List<EnvironmentDTO> getEnvironmentDTOList() {
+        return environmentDTOList;
     }
 
-    public void setEnvironments(List<String> environments) {
-        this.environments = environments;
+    public void setEnvironmentDTOList(List<EnvironmentDTO> environmentDTOList) {
+        this.environmentDTOList = environmentDTOList;
     }
 }

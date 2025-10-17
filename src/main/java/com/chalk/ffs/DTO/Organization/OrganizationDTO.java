@@ -3,8 +3,12 @@ package com.chalk.ffs.DTO.Organization;
 import com.chalk.ffs.Entity.Organization;
 import com.chalk.ffs.Enums.OrganizationStatus;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 
 public class OrganizationDTO {
+
+    private Long id;
     @NotBlank(message = "Organization cannot be blank")
     private String name;
     private Integer projectCount;
@@ -12,6 +16,14 @@ public class OrganizationDTO {
 
     public String getName() {
         return name;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public void setName(String name) {
@@ -40,6 +52,7 @@ public class OrganizationDTO {
     }
 
     public OrganizationDTO(Organization organization){
+        this.id= organization.getId();
         this.name=organization.getName();
         this.projectCount=organization.getProjectCount();
         this.status=organization.getStatus();

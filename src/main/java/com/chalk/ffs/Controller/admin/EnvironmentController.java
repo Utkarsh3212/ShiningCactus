@@ -23,15 +23,27 @@ public class EnvironmentController {
         return ResponseEntity.ok(environmentListDTO);
     }
 
-    @PostMapping ("/projects/{projectId}/environments")
-    public ResponseEntity<Void> addEnvironment(@PathVariable Long projectId,@Valid @RequestBody EnvironmentDTO environmentDTO){
-        environmentService.addEnvironmentToProject(projectId,environmentDTO);
+    @PostMapping ("/projects/{projectId}/environments/{environmentId}")
+    public ResponseEntity<EnvironmentDTO> addEnvironmentToProject(@PathVariable Long projectId,@PathVariable Long environmentId){
+        EnvironmentDTO environmentDTO=environmentService.addEnvironmentToProject(projectId,environmentId);
+        return ResponseEntity.ok(environmentDTO);
+    }
+
+    @DeleteMapping("/projects/{projectId}/environments/{environmentId}")
+    public ResponseEntity<Void> removeEnvironmentFromProject(@PathVariable Long projectId, @PathVariable Long environmentId){
+        environmentService.removeEnvironmentFromProject(projectId,environmentId);
         return ResponseEntity.ok().build();
     }
 
-    @DeleteMapping("/projects/{projectId}/environments")
-    public ResponseEntity<Void> removeEnvironment(@PathVariable Long projectId,@Valid @RequestBody EnvironmentDTO environmentDTO){
-        environmentService.removeEnvironmentFromProject(projectId,environmentDTO);
+    @PostMapping("/environments")
+    public ResponseEntity<EnvironmentDTO> createEnvironment(@RequestBody EnvironmentDTO environmentDTO) {
+        EnvironmentDTO created = environmentService.createEnvironment(environmentDTO);
+        return ResponseEntity.ok(created);
+    }
+
+    @DeleteMapping("/environments/{id}")
+    public ResponseEntity<Void> deleteEnvironment(@PathVariable Long id) {
+        environmentService.deleteEnvironment(id);
         return ResponseEntity.ok().build();
     }
 }

@@ -33,6 +33,7 @@ public class Environment {
     public Environment(){}
 
     public Environment(EnvironmentDTO environmentDTO){
+        this.id=environmentDTO.getId();
         this.env=environmentDTO.getEnv();
         this.description=environmentDTO.getDescription();
     }

@@ -9,6 +9,8 @@ import com.chalk.ffs.Exceptions.Project.ProjectNotFoundException;
 import com.chalk.ffs.Repository.EnvironmentRepository;
 import com.chalk.ffs.Repository.ProjectRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class EnvironmentService {
@@ -30,9 +32,12 @@ public class EnvironmentService {
         return new EnvironmentListDTO(project);
     }
 
-    public void addEnvironmentToProject(Long projectId, EnvironmentDTO environmentDTO){
-        Environment environment=environmentRepository.getEnvironmentsByEnv(environmentDTO.getEnv())
-                .orElse(new Environment(environmentDTO));
+    @Transactional(isolation = Isolation.READ_COMMITTED)
+    public EnvironmentDTO addEnvironmentToProject(Long projectId, Long environmentId){
+        Environment environment=environmentRepository.findById(environmentId)
+                .orElseThrow(()->new EnvironmentNotFoundException(
+                        "No Environment found with id:" + environmentId
+                ));
         Project project=projectRepository.getProjectById(projectId)
                 .orElseThrow(()->new ProjectNotFoundException(
                         "No Project found with id: "+ projectId
@@ -42,23 +47,39 @@ public class EnvironmentService {
         project.getEnvironments().add(environment);
 
         environmentRepository.save(environment);
-        projectRepository.save(project);
+
+        return new EnvironmentDTO(environment);
     }
 
-    public void removeEnvironmentFromProject(Long projectId, EnvironmentDTO environmentDTO){
-        Environment environment=environmentRepository.getEnvironmentsByEnv(environmentDTO.getEnv())
-                .orElseThrow(()->new EnvironmentNotFoundException(
-                        "No environment named: "+environmentDTO.getEnv()
+    @Transactional(isolation = Isolation.READ_COMMITTED)
+    public void removeEnvironmentFromProject(Long projectId, Long environmentId) {
+        Environment environment = environmentRepository.findById(environmentId)
+                .orElseThrow(() -> new EnvironmentNotFoundException(
+                        "No Environment found with id:" + environmentId
                 ));
-        Project project=projectRepository.getProjectById(projectId)
-                .orElseThrow(()->new ProjectNotFoundException(
-                        "No Project found with id: "+ projectId
+
+        Project project = projectRepository.findById(projectId)
+                .orElseThrow(() -> new ProjectNotFoundException(
+                        "No Project found with id:" + projectId
                 ));
 
         environment.getProjects().remove(project);
         project.getEnvironments().remove(environment);
 
         environmentRepository.save(environment);
-        projectRepository.save(project);
+    }
+
+    public EnvironmentDTO createEnvironment(EnvironmentDTO environmentDTO) {
+        Environment environment = new Environment(environmentDTO);
+        environment = environmentRepository.save(environment);
+        return new EnvironmentDTO(environment);
+    }
+
+    public void deleteEnvironment(Long environmentId) {
+        Environment environment = environmentRepository.findById(environmentId)
+                .orElseThrow(() -> new EnvironmentNotFoundException(
+                        "No Environment found with id:" + environmentId
+                ));
+        environmentRepository.delete(environment);
     }
 }

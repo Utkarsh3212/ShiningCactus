@@ -5,6 +5,7 @@ import com.chalk.ffs.Enums.ProjectStatus;
 import com.chalk.ffs.Exceptions.Project.InvalidDateException;
 import jakarta.annotation.PostConstruct;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 
 import java.time.LocalDate;
@@ -12,8 +13,8 @@ import java.time.LocalDate;
 import static com.chalk.ffs.Enums.ProjectStatus.*;
 
 public class ProjectDTO {
-    @NotBlank(message = "Organization name cannot be blank")
-    private String organizationName;
+
+    private Long orgId;
     @NotBlank(message = "Project name cannot be blank")
     private String name;
     private ProjectStatus projectStatus;
@@ -32,19 +33,19 @@ public class ProjectDTO {
     public ProjectDTO(){}
 
     public ProjectDTO(Project project){
-        this.organizationName =project.getOrganization().getName();
+        this.orgId =project.getOrganization().getId();
         this.name=project.getName();
         this.projectStatus=project.getProjectStatus();
         this.startDate=project.getStartDate();
         this.endDate=project.getEndDate();
     }
 
-    public String getOrganizationName() {
-        return organizationName;
+    public Long getOrgId() {
+        return orgId;
     }
 
-    public void setOrganizationName(String organization) {
-        this.organizationName = organization;
+    public void setOrgId(Long orgId) {
+        this.orgId = orgId;
     }
 
     public String getName() {
