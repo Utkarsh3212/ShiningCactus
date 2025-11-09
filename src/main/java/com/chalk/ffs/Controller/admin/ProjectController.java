@@ -19,7 +19,7 @@ public class ProjectController{
     @PostMapping("/organizations/{orgId}/projects")
     public ResponseEntity<ProjectDTO> createProjectByOrgId(@PathVariable Long orgId,@Valid @RequestBody ProjectDTO projectDTO){
         ProjectDTO created=projectService.createProjectByOrgId(orgId,projectDTO);
-        return ResponseEntity.ok(created);
+        return ResponseEntity.status(201).body(created);
     }
 
     @GetMapping("/organizations/{orgId}/projects")

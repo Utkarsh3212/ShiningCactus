@@ -5,7 +5,9 @@ import com.chalk.ffs.Enums.OrganizationStatus;
 import jakarta.persistence.*;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 public class Organization {
@@ -16,8 +18,11 @@ public class Organization {
     private Integer projectCount;
     private OrganizationStatus status;
 
-    @OneToMany(mappedBy = "organization")
+    @OneToMany(mappedBy = "organization",cascade = {CascadeType.PERSIST,CascadeType.REMOVE})
     private List<Project> projectList = new ArrayList<>();
+
+    @OneToMany(mappedBy = "organization",cascade = {CascadeType.PERSIST,CascadeType.REMOVE})
+    private Set<Environment> environmentList=new HashSet<>();
 
     public Long getId() {
         return id;
@@ -57,6 +62,14 @@ public class Organization {
 
     public void setProjectList(List<Project> projectList) {
         this.projectList = projectList;
+    }
+
+    public Set<Environment> getEnvironmentList() {
+        return environmentList;
+    }
+
+    public void setEnvironmentList(Set<Environment> environmentList) {
+        this.environmentList = environmentList;
     }
 
     public Organization(OrganizationDTO organizationDTO){

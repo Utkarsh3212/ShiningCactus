@@ -2,12 +2,13 @@ package com.chalk.ffs.DTO.Environment;
 
 import com.chalk.ffs.Entity.Environment;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 
 public class EnvironmentDTO {
 
     private Long id;
+    @NotNull
+    private Long orgId;
     @NotBlank(message = "Environment name cannot be blank")
     private String env;
     private String description;
@@ -24,8 +25,9 @@ public class EnvironmentDTO {
 
     public EnvironmentDTO(Environment environment){
         this.id= environment.getId();
+        this.orgId= environment.getOrganization().getId();
         this.env=environment.getEnv();
-        this.description=getDescription();
+        this.description=environment.getDescription();
     }
 
     public String getEnv() {
@@ -42,5 +44,13 @@ public class EnvironmentDTO {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public Long getOrgId() {
+        return orgId;
+    }
+
+    public void setOrgId(Long orgId) {
+        this.orgId = orgId;
     }
 }

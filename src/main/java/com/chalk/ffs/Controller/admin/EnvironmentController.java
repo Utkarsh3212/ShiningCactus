@@ -4,7 +4,6 @@ import com.chalk.ffs.DTO.Environment.EnvironmentDTO;
 import com.chalk.ffs.DTO.Environment.EnvironmentListDTO;
 import com.chalk.ffs.Service.EnvironmentService;
 import com.chalk.ffs.Service.ProjectService;
-import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -26,24 +25,24 @@ public class EnvironmentController {
     @PostMapping ("/projects/{projectId}/environments/{environmentId}")
     public ResponseEntity<EnvironmentDTO> addEnvironmentToProject(@PathVariable Long projectId,@PathVariable Long environmentId){
         EnvironmentDTO environmentDTO=environmentService.addEnvironmentToProject(projectId,environmentId);
-        return ResponseEntity.ok(environmentDTO);
+        return ResponseEntity.status(201).body(environmentDTO);
     }
 
     @DeleteMapping("/projects/{projectId}/environments/{environmentId}")
     public ResponseEntity<Void> removeEnvironmentFromProject(@PathVariable Long projectId, @PathVariable Long environmentId){
         environmentService.removeEnvironmentFromProject(projectId,environmentId);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.noContent().build();
     }
 
     @PostMapping("/environments")
     public ResponseEntity<EnvironmentDTO> createEnvironment(@RequestBody EnvironmentDTO environmentDTO) {
         EnvironmentDTO created = environmentService.createEnvironment(environmentDTO);
-        return ResponseEntity.ok(created);
+        return ResponseEntity.status(201).body(created);
     }
 
     @DeleteMapping("/environments/{id}")
     public ResponseEntity<Void> deleteEnvironment(@PathVariable Long id) {
         environmentService.deleteEnvironment(id);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.noContent().build();
     }
 }

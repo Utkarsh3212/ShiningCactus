@@ -3,9 +3,9 @@ package com.chalk.ffs.DTO.Project;
 import com.chalk.ffs.Entity.Project;
 import com.chalk.ffs.Enums.ProjectStatus;
 import com.chalk.ffs.Exceptions.Project.InvalidDateException;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.annotation.PostConstruct;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 
 import java.time.LocalDate;
@@ -14,6 +14,8 @@ import static com.chalk.ffs.Enums.ProjectStatus.*;
 
 public class ProjectDTO {
 
+    @JsonProperty("projectId")
+    private Long id;
     private Long orgId;
     @NotBlank(message = "Project name cannot be blank")
     private String name;
@@ -26,18 +28,27 @@ public class ProjectDTO {
     @PostConstruct
     private void dateValidation(){
         if(startDate.isAfter(endDate))throw new InvalidDateException("Start date cannot be after end date");
-        if(startDate.isEqual(LocalDate.now())) this.projectStatus=IN_PROGRESS;
+        if(startDate.isBefore(LocalDate.now()) || startDate.isEqual(LocalDate.now())) this.projectStatus=IN_PROGRESS;
         else this.projectStatus=PLANNED;
     }
 
     public ProjectDTO(){}
 
     public ProjectDTO(Project project){
-        this.orgId =project.getOrganization().getId();
+        this.id =project.getId();
+        this.orgId=project.getOrganization().getId();
         this.name=project.getName();
         this.projectStatus=project.getProjectStatus();
         this.startDate=project.getStartDate();
         this.endDate=project.getEndDate();
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public Long getOrgId() {

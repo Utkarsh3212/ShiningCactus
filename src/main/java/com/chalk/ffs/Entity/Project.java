@@ -29,13 +29,14 @@ public class Project{
 
     public Project(){}
     public Project(ProjectDTO projectDTO, Organization organization){
+        this.id=projectDTO.getId();
         this.organization=organization;
         this.name=projectDTO.getName();
         this.startDate=projectDTO.getStartDate();
         this.endDate=projectDTO.getEndDate();
 
         if(startDate.isAfter(endDate))throw new InvalidDateException("The start date cannot be after end date");
-        this.projectStatus=startDate.isEqual(LocalDate.now())?ProjectStatus.IN_PROGRESS:ProjectStatus.PLANNED;
+        this.projectStatus=(startDate.isBefore(LocalDate.now())||startDate.isEqual(LocalDate.now()))?ProjectStatus.IN_PROGRESS:ProjectStatus.PLANNED;
     }
 
     public Long getId() {

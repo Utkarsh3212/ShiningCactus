@@ -20,7 +20,7 @@ public class OrganizationController {
     @PostMapping("/organizations")
     public ResponseEntity<OrganizationDTO> createOrganization(@Valid @RequestBody OrganizationDTO organizationDTO){
         OrganizationDTO created=organizationService.addOrganization(organizationDTO);
-        return ResponseEntity.ok(created);
+        return ResponseEntity.status(201).body(created);
     }
 
     @GetMapping("/organizations")
@@ -38,6 +38,6 @@ public class OrganizationController {
     @DeleteMapping("/organizations/{orgId}")
     public ResponseEntity<Void> deleteOrgById(@PathVariable Long orgId){
         organizationService.deleteOrganizationById(orgId);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.noContent().build();
     }
 }

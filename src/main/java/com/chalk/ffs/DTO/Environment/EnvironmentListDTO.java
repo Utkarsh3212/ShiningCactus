@@ -1,11 +1,13 @@
 package com.chalk.ffs.DTO.Environment;
 
 import com.chalk.ffs.Entity.Project;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.List;
 
 public class EnvironmentListDTO {
     private String projectName;
+    @JsonProperty("environments")
     private List<EnvironmentDTO> environmentDTOList;
 
     public EnvironmentListDTO(){}

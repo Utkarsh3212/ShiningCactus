@@ -3,8 +3,6 @@ package com.chalk.ffs.DTO.Organization;
 import com.chalk.ffs.Entity.Organization;
 import com.chalk.ffs.Enums.OrganizationStatus;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.NotNull;
 
 public class OrganizationDTO {
 
