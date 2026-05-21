@@ -24,6 +24,9 @@ public class Organization {
     @OneToMany(mappedBy = "organization",cascade = {CascadeType.PERSIST,CascadeType.REMOVE})
     private Set<Environment> environmentList=new HashSet<>();
 
+    @OneToMany(mappedBy = "organization",cascade = {CascadeType.PERSIST,CascadeType.REMOVE})
+    private List<User> userList = new ArrayList<>();
+
     public Long getId() {
         return id;
     }
@@ -70,6 +73,14 @@ public class Organization {
 
     public void setEnvironmentList(Set<Environment> environmentList) {
         this.environmentList = environmentList;
+    }
+
+    public List<User> getUserList() {
+        return userList;
+    }
+
+    public void setUserList(List<User> userList) {
+        this.userList = userList;
     }
 
     public Organization(OrganizationDTO organizationDTO){

@@ -60,13 +60,13 @@ public class FeatureFlagService {
 
     public FeatureFlagDTO getFeatureFlag(Long flagId) {
         FeatureFlag featureFlag=featureFlagRepository.findById(flagId)
-                .orElseThrow(()->new EnvironmentNotFoundException("Feature Flag not found with given id:"+flagId
+                .orElseThrow(()->new FeatureFlagNotFoundException("Feature Flag not found with given id:"+flagId
                 ));
         return new FeatureFlagDTO(featureFlag);
     }
 
     @Transactional(isolation = Isolation.READ_COMMITTED)
-    public FeatureFlagDTO updateFeatureFlag(Long flagId, FeatureFlagDTO flagDTO) {
+    public FeatureFlagDTO updateFeatureFlagDTO(Long flagId, FeatureFlagDTO flagDTO) {
         FeatureFlag featureFlag=featureFlagRepository.findById(flagId)
                 .orElseThrow(()->new FeatureFlagNotFoundException("Feature Flag not found with given id:"+flagId
                 ));

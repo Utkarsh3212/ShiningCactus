@@ -7,6 +7,8 @@ import com.chalk.ffs.Exceptions.Organization.OrganizationNotFoundException;
 import com.chalk.ffs.Exceptions.Project.InvalidDateException;
 import com.chalk.ffs.Exceptions.Project.ProjectNotFoundException;
 import com.chalk.ffs.Exceptions.Rule.RuleNotFoundException;
+import com.chalk.ffs.Exceptions.User.EmailAlreadyExistsException;
+import com.chalk.ffs.Exceptions.User.UserNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -67,5 +69,15 @@ public class GlobalExceptionHandler{
     @ExceptionHandler(KeyAlreadyExistsException.class)
     public ResponseEntity<Map<String,Object>> handleKeyAlreadyExists(KeyAlreadyExistsException e){
         return buildErrorResponse(e,HttpStatus.CONFLICT,"Key Already Exists");
+    }
+
+    @ExceptionHandler(UserNotFoundException.class)
+    public ResponseEntity<Map<String,Object>> handleUserNotFound(UserNotFoundException e){
+        return buildErrorResponse(e,HttpStatus.NOT_FOUND,"User Not Found");
+    }
+
+    @ExceptionHandler(EmailAlreadyExistsException.class)
+    public ResponseEntity<Map<String,Object>> handleEmailAlreadyExists(EmailAlreadyExistsException e){
+        return buildErrorResponse(e,HttpStatus.CONFLICT,"Email Already Exists");
     }
 }

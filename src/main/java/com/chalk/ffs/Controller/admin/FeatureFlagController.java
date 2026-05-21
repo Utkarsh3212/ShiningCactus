@@ -41,7 +41,7 @@ public class FeatureFlagController {
             @PathVariable Long flagId,
             @RequestBody FeatureFlagDTO flagDTO
     ) {
-        FeatureFlagDTO updatedFlag = featureFlagService.updateFeatureFlag(flagId, flagDTO);
+        FeatureFlagDTO updatedFlag = featureFlagService.updateFeatureFlagDTO(flagId, flagDTO);
         return ResponseEntity.ok(updatedFlag);
     }
 
