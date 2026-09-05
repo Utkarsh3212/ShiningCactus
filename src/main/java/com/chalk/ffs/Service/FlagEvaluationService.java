@@ -26,13 +26,16 @@ public class FlagEvaluationService {
     private final EnvironmentRepository environmentRepository;
     private final ObjectMapper objectMapper;
     private final FeatureFlagVersionRepository versionRepository;
+    private final TenantAccessService tenantAccessService;
     private final ConditionEvaluator conditionEvaluator = new ConditionEvaluator();
 
     public FlagEvaluationService(EnvironmentRepository environmentRepository, ObjectMapper objectMapper,
-                                 FeatureFlagVersionRepository versionRepository) {
+                                 FeatureFlagVersionRepository versionRepository,
+                                 TenantAccessService tenantAccessService) {
         this.environmentRepository = environmentRepository;
         this.objectMapper = objectMapper;
         this.versionRepository = versionRepository;
+        this.tenantAccessService = tenantAccessService;
     }
 
     @Transactional(readOnly = true)
@@ -58,6 +61,18 @@ public class FlagEvaluationService {
             results.put(key, evaluate(environmentId, key, clientKey, request.getContext()));
         }
         return results;
+    }
+
+    @Transactional(readOnly = true)
+    public FeatureFlagEvaluationResponseDTO evaluateForAdmin(Long environmentId, String key,
+                                                              Map<String, Object> context) {
+        tenantAccessService.requireAdmin();
+        Environment environment = tenantAccessService.requireEnvironmentAccess(environmentId);
+        FeatureFlag flag = environment.getFeatureFlagSet().stream()
+                .filter(candidate -> candidate.getKey().equals(key))
+                .findFirst()
+                .orElseThrow(() -> new FeatureFlagNotFoundException("Feature Flag not found with key: " + key));
+        return evaluate(flag, context == null ? Map.of() : context);
     }
 
     private FeatureFlagEvaluationResponseDTO evaluate(FeatureFlag flag, Map<String, Object> context) {
