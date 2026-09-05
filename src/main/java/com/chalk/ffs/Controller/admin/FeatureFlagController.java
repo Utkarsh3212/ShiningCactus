@@ -5,6 +5,7 @@ import com.chalk.ffs.DTO.FeatureFlag.FeatureFlagListDTO;
 import com.chalk.ffs.Service.FeatureFlagService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import jakarta.validation.Valid;
 
 @RestController
 public class FeatureFlagController {
@@ -18,7 +19,7 @@ public class FeatureFlagController {
     @PostMapping("/environments/{envId}/flags")
     public ResponseEntity<FeatureFlagDTO> createFeatureFlag(
             @PathVariable Long envId,
-            @RequestBody FeatureFlagDTO flagDTO
+            @Valid @RequestBody FeatureFlagDTO flagDTO
     ) {
         FeatureFlagDTO createdFlag = featureFlagService.createFeatureFlag(envId, flagDTO);
         return ResponseEntity.status(201).body(createdFlag);
@@ -39,7 +40,7 @@ public class FeatureFlagController {
     @PutMapping("/flags/{flagId}")
     public ResponseEntity<FeatureFlagDTO> updateFeatureFlag(
             @PathVariable Long flagId,
-            @RequestBody FeatureFlagDTO flagDTO
+            @Valid @RequestBody FeatureFlagDTO flagDTO
     ) {
         FeatureFlagDTO updatedFlag = featureFlagService.updateFeatureFlagDTO(flagId, flagDTO);
         return ResponseEntity.ok(updatedFlag);

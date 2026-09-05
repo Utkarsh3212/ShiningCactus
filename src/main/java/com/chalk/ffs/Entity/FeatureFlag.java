@@ -4,10 +4,12 @@ import com.chalk.ffs.DTO.FeatureFlag.FeatureFlagDTO;
 import jakarta.persistence.*;
 
 import java.util.HashSet;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 @Entity
+@Table(uniqueConstraints = @UniqueConstraint(name = "uk_feature_flag_environment_key", columnNames = {"environment_id", "key"}))
 public class FeatureFlag {
 
     public enum FlagType{
@@ -20,7 +22,7 @@ public class FeatureFlag {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
-    @Column(nullable = false,updatable = false,unique = true)
+    @Column(nullable = false,updatable = false)
     private String key;
     private String name;
     private String description;
@@ -32,9 +34,14 @@ public class FeatureFlag {
     @OneToMany(mappedBy = "featureFlag",cascade = CascadeType.ALL,orphanRemoval = true)
     private Set<Rule> rules=new HashSet<>();
 
+    @OneToMany(mappedBy = "featureFlag", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OrderBy("id ASC")
+    private List<FeatureFlagVariant> variants = new ArrayList<>();
+
     private FlagType type;
     private String defaultValue;
     private Boolean enabled;
+    private Integer rolloutPercentage = 100;
 
     public FeatureFlag(){}
 
@@ -50,6 +57,7 @@ public class FeatureFlag {
             this.defaultValue="false";
         }
         this.enabled = Boolean.TRUE.equals(featureFlagDTO.getEnabled());
+        this.rolloutPercentage = featureFlagDTO.getRolloutPercentage() == null ? 100 : featureFlagDTO.getRolloutPercentage();
     }
 
     public void updateFromDTO(FeatureFlagDTO featureFlagDTO) {
@@ -70,7 +78,12 @@ public class FeatureFlag {
             this.defaultValue = featureFlagDTO.getDefaultValue();
         }
 
-        this.enabled = Boolean.TRUE.equals(featureFlagDTO.getEnabled());
+        if (featureFlagDTO.getEnabled() != null) {
+            this.enabled = featureFlagDTO.getEnabled();
+        }
+        if (featureFlagDTO.getRolloutPercentage() != null) {
+            this.rolloutPercentage = featureFlagDTO.getRolloutPercentage();
+        }
     }
 
 
@@ -144,5 +157,21 @@ public class FeatureFlag {
 
     public void setEnabled(Boolean enabled) {
         this.enabled = enabled;
+    }
+
+    public List<FeatureFlagVariant> getVariants() {
+        return variants;
+    }
+
+    public void setVariants(List<FeatureFlagVariant> variants) {
+        this.variants = variants;
+    }
+
+    public Integer getRolloutPercentage() {
+        return rolloutPercentage;
+    }
+
+    public void setRolloutPercentage(Integer rolloutPercentage) {
+        this.rolloutPercentage = rolloutPercentage;
     }
 }

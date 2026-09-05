@@ -14,6 +14,7 @@ public class Rule {
     @JoinColumn(name = "flag_id")
     private FeatureFlag featureFlag;
     private String name;
+    private String variantKey;
 
     @Column(columnDefinition = "text")
     @Convert(converter = ConditionConverter.class)
@@ -24,6 +25,7 @@ public class Rule {
     public Rule(RuleDTO ruleDTO){
         this.conditions=ruleDTO.getConditions();
         this.name=ruleDTO.getName();
+        this.variantKey=ruleDTO.getVariantKey();
     }
 
     public ConditionNode getConditions() {
@@ -44,6 +46,14 @@ public class Rule {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getVariantKey() {
+        return variantKey;
+    }
+
+    public void setVariantKey(String variantKey) {
+        this.variantKey = variantKey;
     }
 
     public void setFeatureFlag(FeatureFlag featureFlag) {

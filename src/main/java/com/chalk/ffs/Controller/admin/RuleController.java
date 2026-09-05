@@ -4,6 +4,7 @@ import com.chalk.ffs.DTO.Rule.RuleDTO;
 import com.chalk.ffs.Service.RuleService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import jakarta.validation.Valid;
 
 @RestController
 public class RuleController {
@@ -15,13 +16,13 @@ public class RuleController {
     }
 
     @PostMapping("/flags/{flagId}/rules")
-    public ResponseEntity<RuleDTO> createRule(@PathVariable Long flagId, @RequestBody RuleDTO ruleDTO) {
+    public ResponseEntity<RuleDTO> createRule(@PathVariable Long flagId, @Valid @RequestBody RuleDTO ruleDTO) {
         RuleDTO createdRule = ruleService.createRule(flagId, ruleDTO);
         return ResponseEntity.status(201).body(createdRule);
     }
 
     @PutMapping("/rules/{ruleId}")
-    public ResponseEntity<RuleDTO> updateRule(@PathVariable Long ruleId, @RequestBody RuleDTO ruleDTO) {
+    public ResponseEntity<RuleDTO> updateRule(@PathVariable Long ruleId, @Valid @RequestBody RuleDTO ruleDTO) {
         RuleDTO updatedRule = ruleService.updateRule(ruleId, ruleDTO);
         return ResponseEntity.ok(updatedRule);
     }

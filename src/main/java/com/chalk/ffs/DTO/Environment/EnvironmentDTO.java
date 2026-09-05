@@ -3,6 +3,7 @@ package com.chalk.ffs.DTO.Environment;
 import com.chalk.ffs.Entity.Environment;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class EnvironmentDTO {
 
@@ -12,6 +13,8 @@ public class EnvironmentDTO {
     @NotBlank(message = "Environment name cannot be blank")
     private String env;
     private String description;
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+    private String clientKey;
 
     public EnvironmentDTO(){}
 
@@ -28,6 +31,7 @@ public class EnvironmentDTO {
         this.orgId= environment.getOrganization().getId();
         this.env=environment.getEnv();
         this.description=environment.getDescription();
+        this.clientKey=environment.getClientKey();
     }
 
     public String getEnv() {
@@ -53,4 +57,7 @@ public class EnvironmentDTO {
     public void setOrgId(Long orgId) {
         this.orgId = orgId;
     }
+
+    public String getClientKey() { return clientKey; }
+    public void setClientKey(String clientKey) { this.clientKey = clientKey; }
 }

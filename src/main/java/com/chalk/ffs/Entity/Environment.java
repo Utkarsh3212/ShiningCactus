@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.UUID;
 
 @Entity
 public class Environment {
@@ -13,6 +14,8 @@ public class Environment {
     private Long id;
     private String env;
     private String description;
+    @Column(nullable = false, unique = true, updatable = false)
+    private String clientKey;
 
     @ManyToMany
     @JoinTable(
@@ -44,6 +47,7 @@ public class Environment {
         this.env=environmentDTO.getEnv();
         this.description=environmentDTO.getDescription();
         this.organization=organization;
+        this.clientKey = UUID.randomUUID().toString();
     }
 
     public Long getId() {
@@ -84,5 +88,19 @@ public class Environment {
 
     public void setFeatureFlagSet(Set<FeatureFlag> featureFlagSet) {
         this.featureFlagSet = featureFlagSet;
+    }
+
+    public String getClientKey() {
+        return clientKey;
+    }
+
+    public void setClientKey(String clientKey) {
+        this.clientKey = clientKey;
+    }
+
+    @PrePersist
+    @PreUpdate
+    private void ensureClientKey() {
+        if (clientKey == null || clientKey.isBlank()) clientKey = UUID.randomUUID().toString();
     }
 }

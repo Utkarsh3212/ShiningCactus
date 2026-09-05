@@ -10,6 +10,7 @@ public class RuleDTO {
     private Long id;
     @NotBlank
     private String name;
+    private String variantKey;
     private Long featureFlagId;
     @NotNull
     private ConditionNode conditions;
@@ -21,6 +22,7 @@ public class RuleDTO {
         this.featureFlagId=featureFlagId;
         this.conditions=rule.getConditions();
         this.name= rule.getName();
+        this.variantKey=rule.getVariantKey();
     }
 
     public RuleDTO(Rule rule){
@@ -28,6 +30,7 @@ public class RuleDTO {
         this.featureFlagId=rule.getFeatureFlag().getId();
         this.conditions=rule.getConditions();
         this.name=rule.getName();
+        this.variantKey=rule.getVariantKey();
     }
 
     @Override
@@ -59,6 +62,9 @@ public class RuleDTO {
     public void setName(String name) {
         this.name = name;
     }
+
+    public String getVariantKey() { return variantKey; }
+    public void setVariantKey(String variantKey) { this.variantKey = variantKey; }
 
     public ConditionNode getConditions() {
         return conditions;

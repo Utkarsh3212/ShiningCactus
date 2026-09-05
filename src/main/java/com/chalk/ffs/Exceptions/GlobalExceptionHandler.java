@@ -13,6 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.security.access.AccessDeniedException;
 
 import java.time.LocalDateTime;
 import java.util.LinkedHashMap;
@@ -79,5 +80,20 @@ public class GlobalExceptionHandler{
     @ExceptionHandler(EmailAlreadyExistsException.class)
     public ResponseEntity<Map<String,Object>> handleEmailAlreadyExists(EmailAlreadyExistsException e){
         return buildErrorResponse(e,HttpStatus.CONFLICT,"Email Already Exists");
+    }
+
+    @ExceptionHandler({com.chalk.ffs.Exceptions.AccessDeniedException.class, AccessDeniedException.class})
+    public ResponseEntity<Map<String,Object>> handleAccessDenied(Exception e) {
+        return buildErrorResponse(e, HttpStatus.FORBIDDEN, "Access Denied");
+    }
+
+    @ExceptionHandler(InvalidConfigurationException.class)
+    public ResponseEntity<Map<String,Object>> handleInvalidConfiguration(InvalidConfigurationException e) {
+        return buildErrorResponse(e, HttpStatus.BAD_REQUEST, "Invalid Configuration");
+    }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<Map<String,Object>> handleIllegalArgument(IllegalArgumentException e) {
+        return buildErrorResponse(e, HttpStatus.BAD_REQUEST, "Invalid Request");
     }
 }

@@ -16,35 +16,31 @@ import org.springframework.transaction.annotation.Transactional;
 public class ProjectService {
     private final ProjectRepository projectRepository;
     private final OrganizationRepository organizationRepository;
+    private final TenantAccessService tenantAccessService;
 
-    public ProjectService(ProjectRepository projectRepository, OrganizationRepository organizationRepository){
+    public ProjectService(ProjectRepository projectRepository, OrganizationRepository organizationRepository,
+                          TenantAccessService tenantAccessService){
         this.projectRepository=projectRepository;
         this.organizationRepository=organizationRepository;
+        this.tenantAccessService=tenantAccessService;
     }
 
+    @Transactional(readOnly = true)
     public ProjectDTO getProjectById(Long projectId){
-        Project project=projectRepository.getProjectById(projectId)
-                .orElseThrow(()->new ProjectNotFoundException(
-                   "Project not found with the given id: "+projectId
-                ));
-        return new ProjectDTO(project);
+        tenantAccessService.requireAdmin();
+        return new ProjectDTO(tenantAccessService.requireProjectAccess(projectId));
     }
 
+    @Transactional(readOnly = true)
     public ProjectListDTO getProjectListByOrgId(Long orgId){
-        Organization organization=organizationRepository.getOrganizationById(orgId)
-                .orElseThrow(()->new OrganizationNotFoundException(
-                        "No organization found with id:"+orgId
-                ));
-
-        return new ProjectListDTO(organization);
+        tenantAccessService.requireAdmin();
+        return new ProjectListDTO(tenantAccessService.requireOrganizationAccess(orgId));
     }
 
     @Transactional(isolation = Isolation.READ_COMMITTED)
     public ProjectDTO createProjectByOrgId(Long orgId,ProjectDTO projectDTO){
-        Organization organization=organizationRepository.getOrganizationById(orgId)
-                .orElseThrow(()->new OrganizationNotFoundException(
-                        "No organization found with id: "+orgId
-                ));
+        tenantAccessService.requireAdmin();
+        Organization organization=tenantAccessService.requireOrganizationAccess(orgId);
 
         Project project=new Project(projectDTO,organization);
         project=projectRepository.save(project);
@@ -53,5 +49,29 @@ public class ProjectService {
         organization=organizationRepository.save(organization);
 
         return new ProjectDTO(project);
+    }
+
+    @Transactional(isolation = Isolation.READ_COMMITTED)
+    public ProjectDTO updateProject(Long projectId, ProjectDTO projectDTO) {
+        tenantAccessService.requireAdmin();
+        Project project = tenantAccessService.requireProjectAccess(projectId);
+        if (projectDTO.getStartDate() == null || projectDTO.getEndDate() == null || projectDTO.getStartDate().isAfter(projectDTO.getEndDate())) {
+            throw new com.chalk.ffs.Exceptions.Project.InvalidDateException("Start date cannot be after end date");
+        }
+        project.setName(projectDTO.getName());
+        project.setStartDate(projectDTO.getStartDate());
+        project.setEndDate(projectDTO.getEndDate());
+        project.setProjectStatus(projectDTO.getStartDate().isAfter(java.time.LocalDate.now()) ? com.chalk.ffs.Enums.ProjectStatus.PLANNED : com.chalk.ffs.Enums.ProjectStatus.IN_PROGRESS);
+        return new ProjectDTO(projectRepository.save(project));
+    }
+
+    @Transactional(isolation = Isolation.READ_COMMITTED)
+    public void deleteProject(Long projectId) {
+        tenantAccessService.requireAdmin();
+        Project project = tenantAccessService.requireProjectAccess(projectId);
+        Organization organization = project.getOrganization();
+        organization.getProjectList().remove(project);
+        organization.setProjectCount(Math.max(0, (organization.getProjectCount() == null ? 0 : organization.getProjectCount()) - 1));
+        projectRepository.delete(project);
     }
 }

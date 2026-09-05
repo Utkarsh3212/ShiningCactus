@@ -13,9 +13,11 @@ import java.util.List;
 @Service
 public class OrganizationService {
     private final OrganizationRepository organizationRepository;
+    private final TenantAccessService tenantAccessService;
 
-    public OrganizationService(OrganizationRepository organizationRepository){
+    public OrganizationService(OrganizationRepository organizationRepository, TenantAccessService tenantAccessService){
         this.organizationRepository=organizationRepository;
+        this.tenantAccessService=tenantAccessService;
     }
 
     @Transactional(isolation = Isolation.READ_COMMITTED)
@@ -26,19 +28,18 @@ public class OrganizationService {
     }
 
     public List<Organization> listAllOrgs(){
-        return organizationRepository.findAll();
+        tenantAccessService.requireAdmin();
+        return List.of(tenantAccessService.requireOrganizationAccess(tenantAccessService.currentUser().getOrganization().getId()));
     }
 
     @Transactional(isolation = Isolation.READ_COMMITTED)
     public void deleteOrganizationById(Long orgId){
-        organizationRepository.deleteById(orgId);
+        tenantAccessService.requireAdmin();
+        organizationRepository.delete(tenantAccessService.requireOrganizationAccess(orgId));
     }
 
     public OrganizationDTO getOrganizationById(Long orgId){
-        Organization organization = organizationRepository.getOrganizationById(orgId)
-                .orElseThrow(()-> new OrganizationNotFoundException(
-                        "No organization found with id:"+orgId));
-
-        return new OrganizationDTO(organization);
+        tenantAccessService.requireAdmin();
+        return new OrganizationDTO(tenantAccessService.requireOrganizationAccess(orgId));
     }
 }

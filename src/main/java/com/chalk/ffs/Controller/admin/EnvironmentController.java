@@ -6,6 +6,7 @@ import com.chalk.ffs.Service.EnvironmentService;
 import com.chalk.ffs.Service.ProjectService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import jakarta.validation.Valid;
 
 @RestController
 public class EnvironmentController {
@@ -35,7 +36,7 @@ public class EnvironmentController {
     }
 
     @PostMapping("/environments")
-    public ResponseEntity<EnvironmentDTO> createEnvironment(@RequestBody EnvironmentDTO environmentDTO) {
+    public ResponseEntity<EnvironmentDTO> createEnvironment(@Valid @RequestBody EnvironmentDTO environmentDTO) {
         EnvironmentDTO created = environmentService.createEnvironment(environmentDTO);
         return ResponseEntity.status(201).body(created);
     }
@@ -44,5 +45,10 @@ public class EnvironmentController {
     public ResponseEntity<Void> deleteEnvironment(@PathVariable Long id) {
         environmentService.deleteEnvironment(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/environments/{id}/client-key/rotate")
+    public ResponseEntity<EnvironmentDTO> rotateClientKey(@PathVariable Long id) {
+        return ResponseEntity.ok(environmentService.rotateClientKey(id));
     }
 }

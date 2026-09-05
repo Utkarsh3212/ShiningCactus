@@ -5,6 +5,10 @@ import com.chalk.ffs.Entity.FeatureFlag;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
+import java.util.List;
 
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -25,6 +29,11 @@ public class FeatureFlagDTO {
     private Long environmentId;
     private Boolean enabled;
     private Set<RuleDTO> rules;
+    @Min(0)
+    @Max(100)
+    private Integer rolloutPercentage = 100;
+    @Valid
+    private List<FeatureFlagVariantDTO> variants;
 
     public FeatureFlagDTO(){}
 
@@ -41,6 +50,8 @@ public class FeatureFlagDTO {
                 .stream()
                 .map(rule->new RuleDTO(rule, featureFlag.getId()))
                 .collect(Collectors.toSet());
+        this.rolloutPercentage=featureFlag.getRolloutPercentage();
+        this.variants=featureFlag.getVariants().stream().map(FeatureFlagVariantDTO::new).toList();
     }
 
     public Long getId() {
@@ -114,4 +125,9 @@ public class FeatureFlagDTO {
     public void setRules(Set<RuleDTO> rules) {
         this.rules = rules;
     }
+
+    public Integer getRolloutPercentage() { return rolloutPercentage; }
+    public void setRolloutPercentage(Integer rolloutPercentage) { this.rolloutPercentage = rolloutPercentage; }
+    public List<FeatureFlagVariantDTO> getVariants() { return variants; }
+    public void setVariants(List<FeatureFlagVariantDTO> variants) { this.variants = variants; }
 }

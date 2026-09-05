@@ -15,6 +15,7 @@ import com.chalk.ffs.Repository.ProjectRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
+import java.util.UUID;
 
 @Service
 public class EnvironmentService {
@@ -22,32 +23,29 @@ public class EnvironmentService {
     private final EnvironmentRepository environmentRepository;
     private final ProjectRepository projectRepository;
     private final OrganizationRepository organizationRepository;
+    private final TenantAccessService tenantAccessService;
 
-    public EnvironmentService(EnvironmentRepository environmentRepository, ProjectRepository projectRepository,OrganizationRepository organizationRepository){
+    public EnvironmentService(EnvironmentRepository environmentRepository, ProjectRepository projectRepository,OrganizationRepository organizationRepository,
+                              TenantAccessService tenantAccessService){
         this.environmentRepository=environmentRepository;
         this.projectRepository=projectRepository;
         this.organizationRepository=organizationRepository;
+        this.tenantAccessService=tenantAccessService;
     }
 
+    @Transactional(readOnly = true)
     public EnvironmentListDTO getEnvironmentsById(Long projectId){
-        Project project=projectRepository.getProjectById(projectId)
-                .orElseThrow(()->new ProjectNotFoundException(
-                        "No Project found with id: "+ projectId
-                ));
+        tenantAccessService.requireAdmin();
+        Project project=tenantAccessService.requireProjectAccess(projectId);
 
         return new EnvironmentListDTO(project);
     }
 
     @Transactional(isolation = Isolation.READ_COMMITTED)
     public EnvironmentDTO addEnvironmentToProject(Long projectId, Long environmentId){
-        Environment environment=environmentRepository.findById(environmentId)
-                .orElseThrow(()->new EnvironmentNotFoundException(
-                        "No Environment found with id:" + environmentId
-                ));
-        Project project=projectRepository.getProjectById(projectId)
-                .orElseThrow(()->new ProjectNotFoundException(
-                        "No Project found with id: "+ projectId
-                ));
+        tenantAccessService.requireAdmin();
+        Environment environment=tenantAccessService.requireEnvironmentAccess(environmentId);
+        Project project=tenantAccessService.requireProjectAccess(projectId);
         if(!environment.getOrganization().getId().equals(project.getOrganization().getId())){
             throw new IllegalStateException(
                     "Cannot assign as organization of the environment and project are not the same."
@@ -63,15 +61,9 @@ public class EnvironmentService {
 
     @Transactional(isolation = Isolation.READ_COMMITTED)
     public void removeEnvironmentFromProject(Long projectId, Long environmentId) {
-        Environment environment = environmentRepository.findById(environmentId)
-                .orElseThrow(() -> new EnvironmentNotFoundException(
-                        "No Environment found with id:" + environmentId
-                ));
-
-        Project project = projectRepository.findById(projectId)
-                .orElseThrow(() -> new ProjectNotFoundException(
-                        "No Project found with id:" + projectId
-                ));
+        tenantAccessService.requireAdmin();
+        Environment environment = tenantAccessService.requireEnvironmentAccess(environmentId);
+        Project project = tenantAccessService.requireProjectAccess(projectId);
         if(!project.getEnvironments().contains(environment)){
             throw new EnvironmentNotFoundException(
                     "Specified environment not found in the project."
@@ -85,11 +77,9 @@ public class EnvironmentService {
 
     @Transactional(isolation = Isolation.READ_COMMITTED)
     public EnvironmentDTO createEnvironment(EnvironmentDTO environmentDTO) {
+        tenantAccessService.requireAdmin();
         Long orgId=environmentDTO.getOrgId();
-        Organization organization=organizationRepository.getOrganizationById(orgId)
-                .orElseThrow(()-> new OrganizationNotFoundException(
-                        "No organization found with id:"+orgId
-                ));
+        Organization organization=tenantAccessService.requireOrganizationAccess(orgId);
         Environment environment = new Environment(environmentDTO,organization);
         environment = environmentRepository.save(environment);
         return new EnvironmentDTO(environment);
@@ -97,12 +87,18 @@ public class EnvironmentService {
 
     @Transactional(isolation = Isolation.READ_COMMITTED)
     public void deleteEnvironment(Long environmentId) {
-        Environment environment = environmentRepository.findById(environmentId)
-                .orElseThrow(() -> new EnvironmentNotFoundException(
-                        "No Environment found with id:" + environmentId
-                ));
+        tenantAccessService.requireAdmin();
+        Environment environment = tenantAccessService.requireEnvironmentAccess(environmentId);
         Organization organization=environment.getOrganization();
         organization.getEnvironmentList().remove(environment);
         environmentRepository.delete(environment);
+    }
+
+    @Transactional(isolation = Isolation.READ_COMMITTED)
+    public EnvironmentDTO rotateClientKey(Long environmentId) {
+        tenantAccessService.requireAdmin();
+        Environment environment = tenantAccessService.requireEnvironmentAccess(environmentId);
+        environment.setClientKey(UUID.randomUUID().toString());
+        return new EnvironmentDTO(environmentRepository.save(environment));
     }
 }

@@ -9,6 +9,8 @@ public class FeatureFlagSummaryDTO {
     private String description;
     private String type;
     private String defaultValue;
+    private Boolean enabled;
+    private Integer rolloutPercentage;
 
     public FeatureFlagSummaryDTO(FeatureFlag featureFlag) {
         this.id = featureFlag.getId();
@@ -17,6 +19,8 @@ public class FeatureFlagSummaryDTO {
         this.description = featureFlag.getDescription();
         this.type = featureFlag.getType().name();
         this.defaultValue = featureFlag.getDefaultValue();
+        this.enabled = featureFlag.getEnabled();
+        this.rolloutPercentage = featureFlag.getRolloutPercentage();
     }
 
     public Long getId() {
@@ -66,4 +70,9 @@ public class FeatureFlagSummaryDTO {
     public void setDefaultValue(String defaultValue) {
         this.defaultValue = defaultValue;
     }
+
+    public Boolean getEnabled() { return enabled; }
+    public void setEnabled(Boolean enabled) { this.enabled = enabled; }
+    public Integer getRolloutPercentage() { return rolloutPercentage; }
+    public void setRolloutPercentage(Integer rolloutPercentage) { this.rolloutPercentage = rolloutPercentage; }
 }
